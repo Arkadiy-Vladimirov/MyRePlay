@@ -5,12 +5,20 @@ This is my private copy of sb-ai-lab/RePlay repository (08.08.2023 version).
 Here I perform experiments, write notes and such. The original Replay README.md 
 is RePlayREADME.md here.
 
-# TO DO List
+# Task List
 ### KL-UCB:
-- implement KL-UCB algorithm - DONE
-- test KL-UCB in `rlberry` framework - DONE
-- inject KL-UCB into `UCB` class and obtain metrics on MovieLens - DONE
-- put the KL-UCB into a separate `KL_UCB` class - IN PROGRESS
+#### DONE
+- implement KL-UCB algorithm
+- test KL-UCB in `rlberry` framework
+- inject KL-UCB into `UCB` class and obtain metrics on MovieLens
+- put the KL-UCB into a separate `KL_UCB` class
+#### TO DO
+- get rid of spark session and pandas manipualtions in KL-UCB, i.e. perform the calculations directly on spark dataframes (this would require understanding and usage of `Spark UDF`s and `Apache Arrow` in `PySpark`)
+- write `KL_UCB` class documentation
+- inherit `KL_UCB` ftom `UCB` class to avoid multiple code duplicates
+- play with UCB and KL-UCB exploration coefficients to improve on-MovieLens performance
+
+
 
 # Notes
 
@@ -53,7 +61,8 @@ $ source ./.venv/bin/activate
 ```
 $ pip install --force-reinstall dist/replay_rec-0.10.0-py3-none-any.whl
 ```
-Now we may peacefully run notebooks at `./experiments`.
+Now we may peacefully run notebooks at `./experiments`. (don't forget to select 
+recently made `.venv` kernel in your notebook!)
 ________________________________________________________________________________
 
 ## UCB
