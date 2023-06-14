@@ -4,11 +4,11 @@ from typing import Any, Dict, List, Optional
 
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as sf
-from pyspark.sql import SparkSession
 
 from replay.metrics import Metric, NDCG
 from replay.models.base_rec import NonPersonalizedRecommender
 
+from replay.session_handler import State 
 import numpy as np
 from scipy.optimize import brentq
 
@@ -58,7 +58,6 @@ class KL_UCB(NonPersonalizedRecommender):
         exploration_coef: float = 0,
         sample: bool = False,
         seed: Optional[int] = None,
-        spark_session: SparkSession = None,
     ):
         """
         :param exploration_coef: exploration coefficient
@@ -72,7 +71,6 @@ class KL_UCB(NonPersonalizedRecommender):
         self.coef = exploration_coef
         self.sample = sample
         self.seed = seed
-        self.spark_session = spark_session
         super().__init__(add_cold_items=True, cold_weight=1)
 
     @property
@@ -200,6 +198,6 @@ class KL_UCB(NonPersonalizedRecommender):
         pd_df = self.items_counts_aggr.toPandas()
         pd_df['relevance'] = pd_df[['pos', 'total']].apply(get_ucb, axis=1)
 
-        self.item_popularity = self.spark_session.createDataFrame(pd_df[['item_idx', 'relevance']])
+        self.item_popularity = State().session.createDataFrame(pd_df[['item_idx', 'relevance']])
         self.item_popularity.cache().count()
         self.fill = 1 + math.sqrt(self.coef * math.log(self.full_count))

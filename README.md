@@ -12,11 +12,15 @@ is RePlayREADME.md here.
 - test KL-UCB in `rlberry` framework
 - inject KL-UCB into `UCB` class and obtain metrics on MovieLens
 - put the KL-UCB into a separate `KL_UCB` class
+- get rid of spark session parameter in KL-UCB constructor
 #### TO DO
-- get rid of spark session and pandas manipualtions in KL-UCB, i.e. perform the calculations directly on spark dataframes (this would require understanding and usage of `Spark UDF`s and `Apache Arrow` in `PySpark`)
+- get rid of pandas manipualtions in KL-UCB, i.e. perform the calculations 
+    directly on spark dataframes (this would require understanding and usage of 
+    `Spark UDF`s and `Apache Arrow` in `PySpark`)
 - write `KL_UCB` class documentation
 - inherit `KL_UCB` ftom `UCB` class to avoid multiple code duplicates
-- play with UCB and KL-UCB exploration coefficients to improve on-MovieLens performance
+- play with UCB and KL-UCB exploration coefficients to improve on-MovieLens 
+    performance
 
 
 
