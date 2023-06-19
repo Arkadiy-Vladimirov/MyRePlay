@@ -9,11 +9,13 @@ from replay.metrics import Metric, NDCG
 from replay.models.base_rec import NonPersonalizedRecommender
 
 from replay.session_handler import State 
+from pyspark.sql.types import DoubleType
+from pyspark.sql.functions import udf
 import numpy as np
 from scipy.optimize import brentq
 
 
-class KL_UCB(NonPersonalizedRecommender):
+class KL_UCB_UDF(NonPersonalizedRecommender):
     """Simple bandit model, which caclulate item relevance as upper confidence bound
     (`UCB <https://medium.com/analytics-vidhya/multi-armed-bandit-analysis-of-upper-confidence-bound-algorithm-4b84be516047>`_)
     for the confidence interval of true fraction of positive ratings.
@@ -168,16 +170,17 @@ class KL_UCB(NonPersonalizedRecommender):
         self._calc_item_popularity()
 
     def _calc_item_popularity(self):
-        
+
         rhs = np.log(self.full_count) + self.coef * np.log(np.log(self.full_count))
         eps = 1e-12
 
         def Bernoulli_KL(p,q) :
             return p * np.log(p/q) + (1-p) * np.log((1-p)/(1-q))
         
-        def get_ucb(row) :
+        @udf(returnType=DoubleType())
+        def get_ucb(pos, total) :
 
-            p = row.pos / row.total
+            p = pos / total
             
             if (p == 0) :
                 ucb = brentq(lambda q: np.log(1/(1-q)) - rhs, 0, 1-eps)
@@ -187,12 +190,13 @@ class KL_UCB(NonPersonalizedRecommender):
                 ucb = brentq(lambda q: np.log(1/q) - rhs    , 0+eps, 1)
                 return ucb
             
-            ucb = brentq(lambda q: row.total * Bernoulli_KL(p, q) - rhs, p, 1-eps)
+            ucb = brentq(lambda q: total * Bernoulli_KL(p, q) - rhs, p, 1-eps)
             return ucb
         
-        pd_df = self.items_counts_aggr.toPandas()
-        pd_df['relevance'] = pd_df[['pos', 'total']].apply(get_ucb, axis=1)
+        items_counts = self.items_counts_aggr.withColumn(
+            "relevance", get_ucb("pos", "total")
+        )
+        self.item_popularity = items_counts.drop("pos", "total")
 
-        self.item_popularity = State().session.createDataFrame(pd_df[['item_idx', 'relevance']])
         self.item_popularity.cache().count()
         self.fill = 1 + math.sqrt(self.coef * math.log(self.full_count))

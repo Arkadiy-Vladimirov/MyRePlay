@@ -13,24 +13,21 @@ is RePlayREADME.md here.
 - inject KL-UCB into `UCB` class and obtain metrics on MovieLens
 - put the KL-UCB into a separate `KL_UCB` class
 - get rid of spark session parameter in KL-UCB constructor
+- get rid of pandas manipualtions in KL-UCB, i.e. perform the calculations directly on spark dataframes (via PySpark UDF)
 #### TO DO
-- get rid of pandas manipualtions in KL-UCB, i.e. perform the calculations 
-    directly on spark dataframes (this would require understanding and usage of 
-    `Spark UDF`s and `Apache Arrow` in `PySpark`)
+- vectorize the calulations somehow
 - write `KL_UCB` class documentation
 - inherit `KL_UCB` ftom `UCB` class to avoid multiple code duplicates
-- play with UCB and KL-UCB exploration coefficients to improve on-MovieLens 
-    performance
 
 
 
 # Notes
 
 ## Useful Links:
-- **Replay** https://github.com/sb-ai-lab/RePlay
-- **OBP**    https://github.com/st-tech/zr-obp?ysclid=li50kcw2ru470022012 
-- **KL-UCB** https://arxiv.org/pdf/1102.2490.pdf
-- **LinUCB** https://arxiv.org/pdf/1003.0146.pdf
+- [**Replay**](https://github.com/sb-ai-lab/RePlay)
+- [**Open Bandit Pipeline**](https://github.com/st-tech/zr-obp?ysclid=li50kcw2ru470022012)
+- [**KL-UCB**](https://arxiv.org/pdf/1102.2490.pdf)
+- [**LinUCB**](https://arxiv.org/pdf/1003.0146.pdf)
 ________________________________________________________________________________
 
 ## Installation guide:
@@ -96,6 +93,10 @@ efficiently computed using Newton iterations. Although the thoretical bounds
 are proven for `coef` = 3, authors also recommend to take `coef` = 0 for 
 optimal performance in practice.
 ________________________________________________________________________________
+
+## PySpark
+- on `pandas_udf` vs `udf`: [link](https://www.databricks.com/blog/2017/10/30/introducing-vectorized-udfs-for-pyspark.html) (VPN required)
+- on `pandas` vectorization: [link](https://pythonspeed.com/articles/pandas-vectorization/)
 
 ________________________________________________________________________________
 *Arkadiy Vladimirov* © *2023*
