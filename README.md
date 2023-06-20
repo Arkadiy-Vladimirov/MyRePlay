@@ -14,10 +14,11 @@ is RePlayREADME.md here.
 - put the KL-UCB into a separate `KL_UCB` class
 - get rid of spark session parameter in KL-UCB constructor
 - get rid of pandas manipualtions in KL-UCB, i.e. perform the calculations directly on spark dataframes (via PySpark UDF)
-#### TO DO
-- vectorize the calulations somehow
-- write `KL_UCB` class documentation
 - inherit `KL_UCB` ftom `UCB` class to avoid multiple code duplicates
+#### TO DO
+- write `KL_UCB` class documentation 
+- commit `KL_UCB` into HDI Lab's Replay repo
+- think about `Lin_UCB` - inherit from `UserRec`?
 
 
 
@@ -64,6 +65,12 @@ $ pip install --force-reinstall dist/replay_rec-0.10.0-py3-none-any.whl
 ```
 Now we may peacefully run notebooks at `./experiments`. (don't forget to select 
 recently made `.venv` kernel in your notebook!)
+- You may also use
+```
+$ bash build.sh ./
+```
+inside `.venv` environment to build the project with docs. 
+
 ________________________________________________________________________________
 
 ## UCB
@@ -98,5 +105,10 @@ ________________________________________________________________________________
 - on `pandas_udf` vs `udf`: [link](https://www.databricks.com/blog/2017/10/30/introducing-vectorized-udfs-for-pyspark.html) (VPN required)
 - on `pandas` vectorization: [link](https://pythonspeed.com/articles/pandas-vectorization/)
 
+## Docs
+- [Math support in Sphinx](https://sphinx-experiment.readthedocs.io/en/latest/ext/math.html)s
+
+## Contributing
+- [contribution guidelines](https://github.com/sb-ai-lab/RePlay/blob/main/CONTRIBUTING.md)
 ________________________________________________________________________________
 *Arkadiy Vladimirov* © *2023*
