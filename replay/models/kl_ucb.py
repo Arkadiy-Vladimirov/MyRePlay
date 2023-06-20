@@ -7,7 +7,7 @@ from scipy.optimize import root_scalar
 
 
 class KL_UCB(UCB):
-    """Single actor Bernoulli bandit model. Same as UCB class it takes the 
+    """Single actor Bernoulli bandit model. Same as UCB class it fits on a 
     dataset of items labeled as 1 for positive interaction and 0 for negative.
     The items are considered as bandits and the labels as outcomes of 
     interactions with them. The algortihm collects the statistics of the 
@@ -15,8 +15,35 @@ class KL_UCB(UCB):
     upper confidence bound. The prediction (recommendation) is a set of items
     with the highest upper bounds.
     
-    The exact formula of upper bound is a bit tricker than such of the 
-    classical ucb and is proved to give asymptotically better results.
+    The exact formula of the upper bound below is a bit trickier than such of 
+    the classical ucb but is `proven to give asymptotically better results 
+    <https://arxiv.org/pdf/1102.2490.pdf>`_.
+
+    .. math::
+        pred_i = \\max q \\in [0,1] : 
+        n_i \\cdot \\operatorname{KL}\\left(\\frac{p_i}{n_i}, q \\right) 
+        \\leq \\log(n) + c \\log(\\log(n)),
+
+    where 
+
+    :math:`pred_i` is the upper bound (predicted relevance), 
+
+    :math:`c` -- exploration coeficient,
+
+    :math:`n` -- number of interactions in log,
+
+    :math:`n_i` -- number of interactions with item :math:`i`,
+
+    :math:`p_i` -- number of positive interactions with item :math:`i`,
+
+    and
+
+    .. math::
+        \\operatorname{KL}(p, q) 
+        = p \\log\\frac{p}{q} + (1-p)\\log\\frac{1-p}{1-q}
+    
+    is the KL-divergence of Bernoulli distribution with parameter :math:`p` 
+    from Bernoulli distribution with parameter :math:`q`.
 
     """
 

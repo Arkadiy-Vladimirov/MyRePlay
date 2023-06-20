@@ -15,6 +15,7 @@ ___________________
     "Wilson Recommender", "PySpark"
     "Random Recommender", "PySpark"
     "UCB", "PySpark"
+    "KL-UCB", "PySpark/Python CPU"
     "K-Nearest Neighbours", "PySpark"
     "Alternating Least Squares", "PySpark"
     "SLIM", "PySpark"
@@ -78,6 +79,11 @@ UCB Recommender
 ``````````````````
 .. autoclass:: replay.models.UCB
    :special-members: __init__
+
+KL-UCB Recommender
+``````````````````
+.. autoclass:: replay.models.KL_UCB
+   :special-members: __init__   
 
 K Nearest Neighbours
 ````````````````````

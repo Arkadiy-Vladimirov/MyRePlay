@@ -16,9 +16,12 @@ is RePlayREADME.md here.
 - get rid of pandas manipualtions in KL-UCB, i.e. perform the calculations directly on spark dataframes (via PySpark UDF)
 - inherit `KL_UCB` ftom `UCB` class to avoid multiple code duplicates
 #### TO DO
-- write `KL_UCB` class documentation 
+- finish `KL_UCB` class documentation 
+- change default `exploration_coef` parameter in `KL_UCB.__init__()`
 - commit `KL_UCB` into HDI Lab's Replay repo
 - think about `Lin_UCB` - inherit from `UserRec`?
+- docs/pages/useful_data/algorithm_selection.md: add KL-UCB to Model Comparison
+- docs/pages/installation.rst: add KL-UCB to model_inheritance image
 
 
 
