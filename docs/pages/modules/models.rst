@@ -83,7 +83,7 @@ UCB Recommender
 KL-UCB Recommender
 ``````````````````
 .. autoclass:: replay.models.KL_UCB
-   :special-members: __init__   
+   :special-members: __init__
 
 K Nearest Neighbours
 ````````````````````

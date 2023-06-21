@@ -1,32 +1,37 @@
 import math
 
+from typing import Optional
 from replay.models import UCB
 from pyspark.sql.types import DoubleType
 from pyspark.sql.functions import udf
 from scipy.optimize import root_scalar
 
-
 class KL_UCB(UCB):
-    """Single actor Bernoulli bandit model. Same as UCB class it fits on a 
-    dataset of items labeled as 1 for positive interaction and 0 for negative.
-    The items are considered as bandits and the labels as outcomes of 
-    interactions with them. The algortihm collects the statistics of the 
-    interactions and estimates the true fraction of positive outcomes with an 
-    upper confidence bound. The prediction (recommendation) is a set of items
-    with the highest upper bounds.
-    
-    The exact formula of the upper bound below is a bit trickier than such of 
-    the classical ucb but is `proven to give asymptotically better results 
-    <https://arxiv.org/pdf/1102.2490.pdf>`_.
+    """
+    Single actor Bernoulli `bandit model 
+    <https://en.wikipedia.org/wiki/Multi-armed_bandit>`_. Same to :class:`UCB` 
+    computes item relevance as an upper confidence bound of true fraction of 
+    positive interactions.
+
+    In a nutshell, KL-UCB сonsiders the data as the history of interactions with 
+    items. The interaction may be either positive or negative. For each item 
+    the model computes the empirical frequency of positive interactions and 
+    estimates the true frequency with an upper confidence bound. The higher 
+    the bound for an item is the more relevant it is presumed.
+
+    The upper bound below is what differs from the classical UCB. It is 
+    computed according to the `original article 
+    <https://arxiv.org/pdf/1102.2490.pdf>`_ where is proven to produce 
+    assymptotically better results.
 
     .. math::
-        pred_i = \\max q \\in [0,1] : 
+        u_i = \\max q \\in [0,1] : 
         n_i \\cdot \\operatorname{KL}\\left(\\frac{p_i}{n_i}, q \\right) 
-        \\leq \\log(n) + c \\log(\\log(n)),
+        \\leqslant \\log(n) + c \\log(\\log(n)),
 
     where 
 
-    :math:`pred_i` is the upper bound (predicted relevance), 
+    :math:`u_i` -- upper bound for item :math:`i`, 
 
     :math:`c` -- exploration coeficient,
 
@@ -45,7 +50,65 @@ class KL_UCB(UCB):
     is the KL-divergence of Bernoulli distribution with parameter :math:`p` 
     from Bernoulli distribution with parameter :math:`q`.
 
+    Being a bit trickier though, the bound shares with UCB the same 
+    exploration-exploitation tradeoff dilemma. You may increase the `c` 
+    coefficient in order to shift the tradeoff towards exploration or decrease 
+    it to set the model to be more sceptical of items with small volume of 
+    collected statistics. The authors of the `article 
+    <https://arxiv.org/pdf/1102.2490.pdf>`_ though claim `c = 0` to be of the 
+    best choice in practice.
+
+    
+    As any other RePlay model, KL-UCB takes a log to fit on as a ``DataFrame`` 
+    with columns ``[user_idx, item_idx, timestamp, relevance]``. Following the 
+    procedure above, KL-UCB would see each row as a record of an interaction 
+    with ``item_idx`` with positive (relevance = 1) or negative (relevance = 0) 
+    outcome. ``user_idx`` and ``timestamp`` are ignored. 
+    
+    If ``relevance`` column is not of 0/1 initially, then you have to decide 
+    what kind of relevance has to be considered as positive and convert 
+    ``relevance`` to binary format during preprocessing.
+
+    To provide a prediction, KL-UCB would sample a set of recommended items for 
+    each user with probabilites proportional to obtained relevances.
+    
+    >>> import pandas as pd
+    >>> data_frame = pd.DataFrame({"user_idx": [1, 2, 3, 3], "item_idx": [1, 2, 1, 2], "relevance": [1, 0, 0, 0]})
+    >>> from replay.utils import convert2spark
+    >>> data_frame = convert2spark(data_frame)
+    >>> model = KL_UCB()
+    >>> model.fit(data_frame)
+    >>> model.predict(data_frame,k=2,users=[1,2,3,4], items=[1,2,3]
+    ... ).toPandas().sort_values(["user_idx","relevance","item_idx"],
+    ... ascending=[True,False,True]).reset_index(drop=True)
+       user_idx  item_idx  relevance
+    0         1         3   1.000000
+    1         1	        2   0.750000
+    2         2	        3   1.000000
+    3         2	        1   0.933013
+    4         3	        3   1.000000
+    5         4	        3   1.000000
+    6         4	        1   0.933013
+
     """
+
+    def __init__(
+    self,
+    exploration_coef: float = 0.0,
+    sample: bool = False,
+    seed: Optional[int] = None,
+    ):
+        """
+        :param exploration_coef: exploration coefficient
+        :param sample: flag to choose recommendation strategy.
+            If True, items are sampled with a probability proportional
+            to the calculated predicted relevance.
+            Could be changed after model training by setting the `sample` 
+            attribute.
+        :param seed: random seed. Provides reproducibility if fixed
+        """
+
+        super().__init__(exploration_coef, sample, seed)
 
     def _calc_item_popularity(self):
 

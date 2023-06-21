@@ -15,10 +15,11 @@ is RePlayREADME.md here.
 - get rid of spark session parameter in KL-UCB constructor
 - get rid of pandas manipualtions in KL-UCB, i.e. perform the calculations directly on spark dataframes (via PySpark UDF)
 - inherit `KL_UCB` ftom `UCB` class to avoid multiple code duplicates
-#### TO DO
 - finish `KL_UCB` class documentation 
 - change default `exploration_coef` parameter in `KL_UCB.__init__()`
-- commit `KL_UCB` into HDI Lab's Replay repo
+#### TO DO
+- check whether `KL_UCB` meets [contributing requirements](https://github.com/sb-ai-lab/RePlay/blob/main/CONTRIBUTING.md)
+- commit `KL_UCB` to HDI Lab's Replay repo
 - think about `Lin_UCB` - inherit from `UserRec`?
 - docs/pages/useful_data/algorithm_selection.md: add KL-UCB to Model Comparison
 - docs/pages/installation.rst: add KL-UCB to model_inheritance image
@@ -70,9 +71,10 @@ Now we may peacefully run notebooks at `./experiments`. (don't forget to select
 recently made `.venv` kernel in your notebook!)
 - You may also use
 ```
-$ bash build.sh ./
+$ bash build.sh build
 ```
-inside `.venv` environment to build the project with docs. 
+inside `.venv` environment to build the project with docs inside `./build` 
+directory. 
 
 ________________________________________________________________________________
 
@@ -109,7 +111,8 @@ ________________________________________________________________________________
 - on `pandas` vectorization: [link](https://pythonspeed.com/articles/pandas-vectorization/)
 
 ## Docs
-- [Math support in Sphinx](https://sphinx-experiment.readthedocs.io/en/latest/ext/math.html)s
+- [Math support in Sphinx](https://sphinx-experiment.readthedocs.io/en/latest/ext/math.html)
+- [How to write docs](https://www.writethedocs.org/guide/writing/beginners-guide-to-docs/)
 
 ## Contributing
 - [contribution guidelines](https://github.com/sb-ai-lab/RePlay/blob/main/CONTRIBUTING.md)
