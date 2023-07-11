@@ -17,12 +17,18 @@ is RePlayREADME.md here.
 - inherit `KL_UCB` ftom `UCB` class to avoid multiple code duplicates
 - finish `KL_UCB` class documentation 
 - change default `exploration_coef` parameter in `KL_UCB.__init__()`
-#### TO DO
-- check whether `KL_UCB` meets [contributing requirements](https://github.com/sb-ai-lab/RePlay/blob/main/CONTRIBUTING.md)
 - commit `KL_UCB` to HDI Lab's Replay repo
-- think about `Lin_UCB` - inherit from `UserRec`?
+#### TO DO
+- cover `KL_UCB` with unit tests
 - docs/pages/useful_data/algorithm_selection.md: add KL-UCB to Model Comparison
 - docs/pages/installation.rst: add KL-UCB to model_inheritance image
+- add obp to poetry toml
+
+### HCB:
+#### DONE
+- tree constructor prototype 
+#### TO DO
+- tree fit protoype
 
 
 
